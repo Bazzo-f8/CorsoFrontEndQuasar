@@ -1,0 +1,75 @@
+<template>
+  <q-page padding>
+    <div class="q-pa-xs">
+    <div class="cursor-pointer" v-if="!isGrid" @click.stop="changeMode('grid')">Grid</div>
+    <div class="cursor-pointer" v-if="isGrid" @click.stop="changeMode('list')">list</div>
+    </div>
+    <div class="row q-mb-md">
+      <div class="col-12 col-md-3">
+        <q-input
+          v-model="filters.search"
+          label="Search"
+          outlined
+          dense
+        />
+      </div>
+    </div>
+      <q-table
+        :loading="loading"
+        :rows="message"
+        :columns="fields"
+        :grid="false"
+        :filter="filters.search"
+        :filter-method="onFilter"
+      />
+    <template v-slot:item="props">
+      <PostCard :post="props.row" />
+    </template>
+  </q-page>
+</template>
+
+<script setup>
+import { ref, onMounted, computed } from "vue";
+import PostCard from "../components/PostCard.vue";
+import api from "../boot/axios.js";
+const filters = ref({
+  search: ""
+})
+
+const message = ref("");
+const fields = ref([
+  { name: "index", label: "#", field: "index" },
+  { name: "userId", label: "Userd Id", field: "userId" },
+  { name: "id", label: "id", field: "id" },
+  { name: "title", label: "Title", field: "title" },
+  { name: "body", label: "Body", field: "body" },
+]);
+
+const isGrid = ref(false);
+
+const getPosts = async () => {
+  try {
+    const { data: result } = await api.get("/post");
+
+    message.value = result;
+  } catch (e) {
+    alert(e.message);
+    console.log(JSON.stringify(e));
+  }
+};
+
+const changeMode = computed((state) => {
+  return state === grid ? this.isGrid = true : this.isGrid = false
+})
+
+onMounted(() => {
+  getPosts();
+});
+
+/**
+ * { "userId": 1,
+ * "id": 1,
+ * "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+ * "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto" }
+ */
+</script>
