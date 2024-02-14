@@ -2,68 +2,88 @@
   <q-page padding>
     <div class="q-pa-xs">
       <div class="q-pa-md">
-        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+        <q-input
+          v-model="filter"
+          borderless
+          debounce="300"
+          dense
+          placeholder="Search"
+        >
           <template v-slot:append>
-            <q-icon name="search" />
+            <q-icon name="search"/>
           </template>
         </q-input>
 
         <div class="q-gutter-y-md">
           <q-btn-toggle
             v-model="isGrid"
-            spread
+            :options="[
+              { label: 'Grid', value: false },
+              { label: 'List', value: true },
+            ]"
             class="my-custom-toggle"
+            color="white"
             no-caps
             rounded
-            unelevated
-            toggle-color="primary"
-            color="white"
+            spread
             text-color="primary"
-            :options="[
-          {label: 'Grid', value: false},
-          {label: 'List', value: true}
-        ]"
+            toggle-color="primary"
+            unelevated
           />
         </div>
       </div>
     </div>
-    <div v-if="!isGrid">
-      <q-table
-        :rows="message"
-        :columns="fields"
-        :grid="false"
-        :filter="filter"
-      />
-    </div>
-
-    <div v-if="isGrid">
-      <PostCard :props="{message, fields, filter}"/>
-    </div>
+    <q-table
+      :columns="fields"
+      :filter="filter"
+      :grid="isGrid"
+      :rows="message"
+      @row-click="onRowClick"
+      :selected-rows-label="getSelectedString"
+      selection="multiple"
+      v-model:selected="selected"
+    />
   </q-page>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import PostCard from "../components/PostCard.vue";
+import {onBeforeMount, ref} from "vue";
+import {useRouter} from 'vue-router';
+//import PostCard from "../components/PostCard.vue";
 //import api from "../boot/axios.js";
 import axios from "axios";
 
-
+const router = useRouter();
 const message = ref([]);
 const fields = ref([
-  { name: "index", label: "#", field: "index" },
-  { name: "userId", label: "Userd Id", field: "userId" },
-  { name: "id", label: "id", field: "id" },
-  { name: "title", label: "Title", field: "title", align: "left" },
-  { name: "body", label: "Body", field: "body", align: "left"  },
+  {name: "index", label: "#", field: "index"},
+  {name: "userId", label: "Userd Id", field: "userId"},
+  {name: "id", label: "id", field: "id"},
+  {name: "title", label: "Title", field: "title", align: "left"},
+  {name: "body", label: "Body", field: "body", align: "left"},
 ]);
 
-const filter = ref('');
+const filter = ref("");
 const isGrid = ref(false);
 
+const onRowClick = (event, row, index) => {
+  postDetail(row)
+};
+
+const postDetail = (post) => {
+  //console.log(post.id)
+  router.push({
+    name: "post-detail",
+    params: {
+      postId: post.id
+    }
+  })
+}
 const getPosts = async () => {
   try {
-    const { data: result } = await axios.get("https://jsonplaceholder.typicode.com/posts");
+    const {data: result} = await axios.get(
+      "https://jsonplaceholder.typicode.com/posts"
+    );
 
     message.value = result;
   } catch (e) {
@@ -72,13 +92,19 @@ const getPosts = async () => {
   }
 };
 
-const changeMode = computed((state) => {
-  return state === "grid" ? this.isGrid = true : this.isGrid = false
-})
-
-onMounted(() => {
+onBeforeMount(() => {
   getPosts();
 });
+
+
+
+const selected = ref([])
+
+
+
+const getSelectedString =  () => {
+    return selected.value.length === 0 ? '' : `${selected.value.length} record${selected.value.length > 1 ? 's' : ''} selected of ${message.value.length}`
+  }
 
 /**
  * { "userId": 1,
