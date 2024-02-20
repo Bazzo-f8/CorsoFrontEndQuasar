@@ -1,21 +1,26 @@
 <template>
-  <q-card class="my-card">
-    <q-item>
-      <q-item-section>
-        <q-item-label>Title</q-item-label>
-      </q-item-section>
-    </q-item>
-    <img src="https://cdn.quasar.dev/img/mountains.jpg">
+  <div class="row">
+    <div class="col-2"></div>
+    <q-card class="my-card">
+      <q-item>
+        <q-item-section>
+          <q-item-label>
+            <div class="text-h6">userId = {{ record.userId }}</div>
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+      <img src="https://cdn.quasar.dev/img/mountains.jpg">
 
-    <q-card-section>
-      <div class="text-h6">userId = {{ record.userId }}</div>
-      <div class="text-subtitle2"> {{ record.title }}</div>
-    </q-card-section>
+      <q-card-section>
 
-    <q-card-section class="q-pt-none">
-      {{ record.body }}
-    </q-card-section>
-  </q-card>
+        <div class="text-subtitle2"> {{ record.title }}</div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        {{ record.body }}
+      </q-card-section>
+    </q-card>
+  </div>
 </template>
 
 <script setup>

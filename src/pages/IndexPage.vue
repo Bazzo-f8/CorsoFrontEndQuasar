@@ -8,7 +8,12 @@
 
 <script>
 import { defineComponent } from "vue";
+/*import _ from "lodash";
 
+let arr = [{user: "ciao"}]
+
+let ciao = _.find(arr, function(o) { return o.user === "bau"; });
+console.log(ciao)*/
 export default defineComponent({
   name: "IndexPage",
 });
